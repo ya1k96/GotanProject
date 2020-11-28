@@ -1,0 +1,107 @@
+// _getMethod( String query ) async {
+  //   HttpClient client = new HttpClient();
+  //   client.badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
+  //   HttpClientRequest request;
+  
+  //   request = await client.getUrl(Uri.http('$_url','$query'));    
+
+  //   request.headers.set('content-type', 'application/json');
+
+  //   HttpClientResponse response = await request.close();
+
+  //   String reply = await response.transform(utf8.decoder).join();
+  //   var result = json.decode(reply);
+
+  //   return result;
+  // }
+  // _postMethod( String query, dynamic body ) async {
+  //   HttpClient client = new HttpClient();
+  //   client.badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
+  //   HttpClientRequest request;
+  
+  //   request = await client.postUrl(Uri.http('$_url','$query', body));    
+
+  //   request.headers.set('content-type', 'application/json');
+
+  //   HttpClientResponse response = await request.close();
+
+  //   String reply = await response.transform(utf8.decoder).join();
+  //   var result = json.decode(reply);
+
+  //   return result;
+  // }
+
+  // void getAdministradores() async {
+
+    // String uri = '$_url/administradores.json';
+    
+    // print( (await http.get('http://192.168.1.5:3000/usuario')).body );
+
+    // final Map<String, dynamic> decodedData = json.decode(resp.body);
+    // final List<Administradores> listaDeAdmin = new List();
+
+    // if( decodedData == null ) return [];
+
+    // decodedData.forEach((id, value) {
+    //   final adminTemp = Administradores.fromJson(value);
+    //   adminTemp.id = id;
+
+    //   listaDeAdmin.add(adminTemp);
+
+    // });
+
+    // return listaDeAdmin;
+
+  // }
+
+  // Future<List<Salida>> getAllSalidas() async {    
+  //     final resp = await getAdministradores();
+  //     final List<Salida> listaDeSalidas = new List();
+
+  //     resp.forEach((admin){
+  //       if(!(admin.salidas.length > 6)){
+  //         final item = Salida.fromJson(admin.salidas);
+  //         item.nombre = admin.nombre;
+
+  //         listaDeSalidas.add(item);
+  //       } else {
+  //         admin.salidas.forEach((id,value) {
+  //         final item = Salida.fromJson(value);
+  //         item.nombre = admin.nombre;
+
+  //         listaDeSalidas.add(item); 
+  //       }); 
+  //       }      
+  //     });
+
+  //     return listaDeSalidas;
+  // }
+  // // 'https://bzcocho.firebaseio.com/administradores/122weasdasda/salidas/1234567890/reservas'
+  // addReserva( Reserva reserva ) async {
+  //   final resp = await getAdministradores();
+  //   String idAdmin;
+  //   Salida aux;
+
+  //   resp.forEach((admin){
+  //     admin.salidas.forEach((id, value){        
+
+  //       if( reserva.idHorario == id ) {
+  //         idAdmin = admin.id;  
+  //         aux = Salida.fromJson(value);
+  //       }
+
+  //     });        
+  //   });
+    
+  //   aux.cupo = aux.cupo - reserva.cantidad;
+
+  //   if( aux.cupo < 0 ) return false;
+
+  //   String urlReserva = '$_url/administradores/$idAdmin/salidas/${reserva.idHorario}/reservas.json';
+  //   String urlUpdateSalida = '$_url/administradores/$idAdmin/salidas/${aux.id}.json';
+
+  //   await http.put(urlUpdateSalida, body: salidaToJson(aux));  
+  //   await http.post(urlReserva, body: reservaToJson(reserva));
+
+  //   return true;  
+  // }
