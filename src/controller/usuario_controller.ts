@@ -22,7 +22,9 @@ class UsuarioController {
         } else {
             return res.json({usuarios});
         }
-    }
+	}
+
+	//WTF: no entiendo porque puse esto
 	public async admins( req: Request, res: Response ) {
         
         const administradores = await usuario_schema.find({is_admin: true});
@@ -48,8 +50,14 @@ class UsuarioController {
                 ok: false,
                 message: 'Completa el formulario'
             });
-        }
-	   const password = (!body.password) ? '': md5(body.password);
+		}
+		
+		if(body.is_google || body.is_facebook){
+			body.password = '';
+		}
+
+	   const password = md5(body.password);
+	   
        const user = {           
            usuario: body.usuario,
            email: body.email,
@@ -58,9 +66,6 @@ class UsuarioController {
 		   is_facebook: (body.is_facebook === 'true') ? true : false
        }
 		
-	   if(user.is_google || user.is_facebook){
-		   user.password = '';
-	   }
 	   
        const nuevoUsuario = new usuario_schema( user );
        nuevoUsuario.save( (err,doc) => {

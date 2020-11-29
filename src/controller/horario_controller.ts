@@ -1,12 +1,9 @@
 import { Request, Response } from 'express';
 import horario_chema from '../models/horario_chema';
-import usuario_chema from '../models/usuario_schema';
 import reserva_schema from '../models/reserva_schema';
-import { Reserva } from '../interfaces/reserva_interface';
 import admin from 'firebase-admin';
 import notificacion_schema from '../models/notificacion_schema';
 var serviceAccount = require("../app/firebase-data.json");
-var ObjectId = require('mongoose').Types.ObjectId;
 
 class HorarioController {
     constructor() {
