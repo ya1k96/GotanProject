@@ -6,12 +6,9 @@ import reserva_schema from '../models/reserva_schema';
 import notificacion_schema from '../models/notificacion_schema';
 
 
-class UsuarioController {
-	constructor(){	
-	}
-
+class UsuarioController {	
     public async index( req: Request, res: Response ) {
-        
+
         const usuarios = await usuario_schema.find({});
 
         if( usuarios.length == 0 ) {
@@ -26,7 +23,7 @@ class UsuarioController {
 
 	//WTF: no entiendo porque puse esto
 	public async admins( req: Request, res: Response ) {
-        
+
         const administradores = await usuario_schema.find({is_admin: true});
 
         if( administradores.length == 0 ) {
@@ -36,12 +33,12 @@ class UsuarioController {
             });
         } else {
             return res.json({
-				ok: true, 
+				ok: true,
 				administradores
 			});
         }
 	}
-	
+
     public create( req: Request, res: Response ) {
         const body = req.body;
 		console.log(body);
@@ -51,22 +48,22 @@ class UsuarioController {
                 message: 'Completa el formulario'
             });
 		}
-		
+
 		if(body.is_google || body.is_facebook){
 			body.password = '';
 		}
 
 	   const password = md5(body.password);
-	   
-       const user = {           
+
+       const user = {
            usuario: body.usuario,
            email: body.email,
            password,
 		   is_google: (body.is_google === 'true') ? true : false,
 		   is_facebook: (body.is_facebook === 'true') ? true : false
        }
-		
-	   
+
+
        const nuevoUsuario = new usuario_schema( user );
        nuevoUsuario.save( (err,doc) => {
         if( err ) {
@@ -96,10 +93,10 @@ class UsuarioController {
 			ok: false,
 			message: 'campos vacios'
 		});
-		
+
 		const email = body.email;
 		const password = body.password;
-		
+
 		const usuario: any = await usuario_schema.findOne({email});
 		console.log(usuario);
 
@@ -109,8 +106,8 @@ class UsuarioController {
 				message: 'Paramteros invalidos'
 			});
 		}
-		
-		if( !usuario.is_google || !usuario.is_facebook ) {
+
+		if( !( usuario.is_google || usuario.is_facebook ) ) {
 			if( md5(password) == usuario.password ){
 				usuario.password = '';
 				return res.json({
@@ -124,7 +121,7 @@ class UsuarioController {
 				usuario
 			});
 		}
-		
+
 		return res.json({
 			ok: false,
 			message: 'Parametros invalidos'
@@ -136,8 +133,8 @@ class UsuarioController {
 		if( email == null ) return res.json({
 			ok: false,
 			message: 'campo vacios'
-		});		
-		
+		});
+
 		const usuario = await usuario_schema.findOne({email: email});
 		console.log(usuario);
 		if( usuario == null ){
@@ -146,23 +143,23 @@ class UsuarioController {
 				message: 'Paramteros invalidos'
 			});
 		}
-		
+
 		return res.json({
 			ok: true,
-			usuario 			
+			usuario
 		});
 	}
 	public async adminById( req: Request, res: Response ){
 		const id = req.body.id;
-		
+
 		if( !id ){
 			return res.json({ ok: false, message: 'Ingresa un id' });
 		}
-		
+
 		const resp = await usuario_schema.findOne({_id: id});
-		
+
 		if( !resp ) return res.json({ok: false, message: 'Sin usuario'});
-		
+
 		return res.json({ok: true, usuario: resp});
 	}
 	// Funcion en mercadopago
@@ -172,16 +169,16 @@ class UsuarioController {
 	// 		  'payer.id': '151888277'
 	// 		}
 	// 	  };
-		  
+
 	// 	  mp.payment.search(configurations, function(payment:any){
 	// 		return res.json({ok: true, payment});
-	// 	  });		
+	// 	  });
 	// }
 
 	//TODO: Especializar para administradores
 	public async cerrarPedido( req: Request, res: Response ) {
 		const idHorario = req.params.id;
-		
+
 		const pedidos: any = await horario_chema.findOneAndUpdate({_id: idHorario}, {pedido_cerrado: true})
 		.populate({
 			path: 'reservas',
@@ -190,23 +187,23 @@ class UsuarioController {
 				path: 'usuario_reservado',
 				select: 'usuario'
 			}
-		})					
+		})
 		console.log(pedidos);
-		
+
 		pedidos.reservas.forEach(async (reserva: any) => {
 			const reserva_async = await reserva_schema.findOneAndUpdate({_id: reserva._id}, {aprobado: true});
-			
-			
+
+
 			const usuario_async = await usuario_schema.findOneAndUpdate({ _id: reserva.usuario_reservado._id }, {notificaciones: {
 				title: "Tu reserva fue aprobada",
 				msg: "Salida a " + pedidos.hacia,
-				salida: pedidos.hora					
+				salida: pedidos.hora
 			}});
-			
-					
+
+
 		});
 
-		return res.json({pedidos});		
+		return res.json({pedidos});
 	}
 
 	async getNotis(req: Request, res: Response) {
@@ -216,17 +213,17 @@ class UsuarioController {
 
 	async getPedidos(req: Request, res: Response) {
 		const id = req.params.id;
-		return res.json( 
+		return res.json(
 			await reserva_schema.find({ usuario_reservado: id })
 			.populate(
-				{ 
-					path: 'horario_id', 
-					select: ['id_admin','hacia','hora', 'precio'], 
-					populate: 
+				{
+					path: 'horario_id',
+					select: ['id_admin','hacia','hora', 'precio'],
+					populate:
 					[
-						{ 
-							path: 'id_admin', 
-							model: 'Usuario', 
+						{
+							path: 'id_admin',
+							model: 'Usuario',
 							select: 'usuario'
 						}
 					]
